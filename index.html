@@ -470,7 +470,7 @@
     <!-- PANTALLA DE INGRESO -->
     <div class="container" id="setup-view">
         <div class="stats" id="player-count">0 LUCHADORES INSCRITOS</div>
-        <div class="error-msg" id="error-msg">INGRESA UNA CANTIDAD PAR DE JUGADORES PARA COMENZAR</div>
+        <div class="error-msg" id="error-msg">INGRESA 2 O MÚLTIPLOS DE 4 (4, 8, 12...) PARA COMENZAR</div>
 
         <div class="input-group">
             <input type="text" id="player-input" placeholder="INGRESA EL NOMBRE DEL LUCHADOR..."
@@ -562,13 +562,14 @@
             const btnGenerate = document.getElementById('btn-generate');
             const errorMsg = document.getElementById('error-msg');
 
-            // VALIDACIÓN: Solo cantidad PAR de jugadores y al menos 2.
-            if (players.length >= 2 && players.length % 2 === 0) {
+            // VALIDACIÓN: 2 jugadores o múltiplos de 4 (4, 8, 12, 16...)
+            const isValidCount = players.length === 2 || (players.length >= 4 && players.length % 4 === 0);
+            if (isValidCount) {
                 btnGenerate.style.display = 'block';
                 errorMsg.style.visibility = 'hidden';
             } else {
                 btnGenerate.style.display = 'none';
-                if (players.length > 0 && players.length % 2 !== 0) {
+                if (players.length > 0 && !isValidCount) {
                     errorMsg.style.visibility = 'visible';
                 } else {
                     errorMsg.style.visibility = 'hidden';
@@ -585,8 +586,9 @@
         }
 
         function startTournament() {
-            if (players.length < 2 || players.length % 2 !== 0) {
-                alert('¡Necesitas una cantidad PAR de luchadores!');
+            const isValidCount = players.length === 2 || (players.length >= 4 && players.length % 4 === 0);
+            if (!isValidCount) {
+                alert('¡Necesitas 2 jugadores o una cantidad que sea múltiplo de 4!');
                 return;
             }
 
