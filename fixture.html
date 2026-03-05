@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Torneo Oficial La Yunta Street Fighter o Cualquier juego de Pelea</title>
+    <!-- Modern Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Orbitron:wght@400;700&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            /* Street Fighter inspired color palette */
+            --bg-dark: #0f0c29;
+            --bg-mid: #302b63;
+            --bg-light: #24243e;
+            --accent-red: #ff3366;
+            --accent-yellow: #ffde59;
+            --accent-blue: #00d2ff;
+            --accent-green: #00ff88;
+            --text-light: #ffffff;
+            --glass-bg: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Orbitron', sans-serif;
+            background: linear-gradient(135deg, var(--bg-dark), var(--bg-mid), var(--bg-light));
+            color: var(--text-light);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 2rem;
+            overflow-x: hidden;
+            background-attachment: fixed;
+        }
+
+        h1 {
+            font-family: 'Bebas Neue', cursive;
+            font-size: 4rem;
+            text-align: center;
+            letter-spacing: 4px;
+            margin-bottom: 2rem;
+            color: transparent;
+            background: linear-gradient(to right, var(--accent-red), var(--accent-yellow));
+            -webkit-background-clip: text;
+            background-clip: text;
+            text-shadow: 2px 2px 10px rgba(255, 51, 102, 0.3);
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes glow {
+            from {
+                text-shadow: 0 0 10px rgba(255, 222, 89, 0.5), 0 0 20px rgba(255, 51, 102, 0.5);
+            }
+
+            to {
+                text-shadow: 0 0 20px rgba(255, 222, 89, 0.8), 0 0 30px rgba(255, 51, 102, 0.8);
+            }
+        }
+
+        .container {
+            width: 100%;
+            max-width: 900px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 2.5rem;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+
+        .input-group {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        input {
+            flex: 1;
+            padding: 1rem 1.5rem;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.1rem;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--accent-blue);
+            color: var(--text-light);
+            border-radius: 8px;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        input:focus {
+            box-shadow: 0 0 15px rgba(0, 210, 255, 0.5);
+            border-color: var(--text-light);
+            transform: scale(1.02);
+        }
+
+        button {
+            font-family: 'Bebas Neue', cursive;
+            font-size: 1.5rem;
+            padding: 0.5rem 2rem;
+            background: linear-gradient(45deg, var(--accent-red), #ff6b6b);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: all 0.5s ease;
+        }
+
+        button:hover::before {
+            left: 100%;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 51, 102, 0.4);
+        }
+
+        button:active {
+            transform: translateY(1px);
+        }
+
+        .btn-generate {
+            background: linear-gradient(45deg, var(--accent-blue), #005cff);
+            width: 100%;
+            margin-top: 1rem;
+            font-size: 2rem;
+            padding: 1rem;
+            display: none;
+        }
+
+        .btn-generate:hover {
+            box-shadow: 0 5px 20px rgba(0, 210, 255, 0.5);
+        }
+
+        .btn-next-round {
+            background: linear-gradient(45deg, var(--accent-green), #00b35f);
+            width: 100%;
+            margin-top: 2rem;
+            font-size: 2.5rem;
+            padding: 1.2rem;
+            display: none;
+            animation: pulse-green 1.5s infinite alternate;
+        }
+
+        @keyframes pulse-green {
+            from {
+                box-shadow: 0 0 10px rgba(0, 255, 136, 0.3);
+            }
+
+            to {
+                box-shadow: 0 0 25px rgba(0, 255, 136, 0.8);
+            }
+        }
+
+        .players-list {
+            list-style: none;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .player-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-left: 4px solid var(--accent-yellow);
+            padding: 1rem;
+            border-radius: 0 8px 8px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            animation: slideIn 0.3s ease forwards;
+            transition: transform 0.2s ease, background 0.2s ease;
+        }
+
+        .player-card:hover {
+            transform: translateX(5px);
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .remove-btn {
+            background: transparent;
+            color: var(--accent-red);
+            font-size: 1rem;
+            padding: 0.2rem 0.5rem;
+            margin: 0;
+            border: 1px solid var(--accent-red);
+        }
+
+        .remove-btn:hover {
+            background: var(--accent-red);
+            color: white;
+            box-shadow: 0 0 10px rgba(255, 51, 102, 0.5);
+            transform: scale(1.1);
+        }
+
+        .fixture-container {
+            display: none;
+            margin-top: 1rem;
+            width: 100%;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .round-title {
+            font-family: 'Bebas Neue', cursive;
+            font-size: 3.5rem;
+            text-align: center;
+            color: var(--accent-blue);
+            margin-bottom: 1.5rem;
+            text-shadow: 0 0 15px rgba(0, 210, 255, 0.6);
+            letter-spacing: 3px;
+        }
+
+        .match {
+            background: rgba(0, 0, 0, 0.6);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .match::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: linear-gradient(to bottom, var(--accent-blue), var(--accent-red));
+        }
+
+        .fighter {
+            font-family: 'Bebas Neue', cursive;
+            font-size: 2rem;
+            flex: 1;
+            text-align: center;
+            color: var(--text-light);
+            text-transform: uppercase;
+            padding: 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            background: rgba(255, 255, 255, 0.05);
+            letter-spacing: 2px;
+        }
+
+        .fighter:hover:not(.disabled) {
+            background: rgba(255, 222, 89, 0.1);
+            border-color: var(--accent-yellow);
+            color: var(--accent-yellow);
+            transform: scale(1.05);
+            box-shadow: 0 0 15px rgba(255, 222, 89, 0.3);
+        }
+
+        .fighter.winner {
+            background: rgba(0, 255, 136, 0.15);
+            border-color: var(--accent-green);
+            color: var(--accent-green);
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(0, 255, 136, 0.4);
+        }
+
+        .fighter.loser {
+            opacity: 0.4;
+            filter: grayscale(100%);
+            transform: scale(0.95);
+        }
+
+        .fighter.disabled {
+            cursor: default;
+        }
+
+        .vs {
+            font-family: 'Bebas Neue', cursive;
+            color: var(--accent-red);
+            font-size: 2rem;
+            text-shadow: 0 0 10px rgba(255, 51, 102, 0.8);
+            padding: 0 1rem;
+            z-index: 1;
+        }
+
+        .instructions {
+            text-align: center;
+            color: var(--accent-yellow);
+            font-size: 1.1rem;
+            margin-bottom: 2rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            animation: pulse-text 2s infinite;
+        }
+
+        @keyframes pulse-text {
+            0% {
+                opacity: 0.6;
+            }
+
+            50% {
+                opacity: 1;
+            }
+
+            100% {
+                opacity: 0.6;
+            }
+        }
+
+        .champion-view {
+            display: none;
+            text-align: center;
+            animation: zoomIn 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+
+        @keyframes zoomIn {
+            from {
+                opacity: 0;
+                transform: scale(0.5);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .champion-title {
+            font-family: 'Bebas Neue', cursive;
+            font-size: 5rem;
+            color: var(--accent-yellow);
+            text-shadow: 0 0 20px rgba(255, 222, 89, 0.8);
+            margin-bottom: 1rem;
+        }
+
+        .champion-name {
+            font-family: 'Bebas Neue', cursive;
+            font-size: 6rem;
+            color: white;
+            padding: 2rem;
+            background: linear-gradient(45deg, rgba(255, 51, 102, 0.2), rgba(0, 210, 255, 0.2));
+            border: 2px solid var(--accent-yellow);
+            border-radius: 20px;
+            display: inline-block;
+            box-shadow: 0 0 50px rgba(255, 222, 89, 0.5);
+        }
+
+        .reset-btn {
+            background: transparent;
+            border: 1px solid var(--glass-border);
+            color: #aaa;
+            margin-top: 3rem;
+            width: 100%;
+        }
+
+        .reset-btn:hover {
+            background: rgba(255, 51, 102, 0.2);
+            color: white;
+            border-color: var(--accent-red);
+        }
+
+        .stats {
+            text-align: center;
+            margin-bottom: 0.5rem;
+            font-size: 1.2rem;
+            color: var(--accent-blue);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: bold;
+        }
+
+        .error-msg {
+            color: var(--accent-red);
+            text-align: center;
+            height: 20px;
+            font-size: 0.9rem;
+            margin-bottom: 1.5rem;
+            text-transform: uppercase;
+        }
+
+        @media (max-width: 600px) {
+            .fighter {
+                font-size: 1.5rem;
+                padding: 0.5rem;
+            }
+
+            .vs {
+                font-size: 1.5rem;
+            }
+
+            h1 {
+                font-size: 2.5rem;
+            }
+
+            .input-group {
+                flex-direction: column;
+            }
+
+            .champion-title {
+                font-size: 3rem;
+            }
+
+            .champion-name {
+                font-size: 4rem;
+                padding: 1rem;
+            }
+
+            .round-title {
+                font-size: 2.5rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>TORNEO<br>JUEGO DE MOCHA</h1>
+
+    <!-- PANTALLA DE INGRESO -->
+    <div class="container" id="setup-view">
+        <div class="stats" id="player-count">0 LUCHADORES INSCRITOS</div>
+        <div class="error-msg" id="error-msg">INGRESA UNA CANTIDAD PAR DE JUGADORES PARA COMENZAR</div>
+
+        <div class="input-group">
+            <input type="text" id="player-input" placeholder="INGRESA EL NOMBRE DEL LUCHADOR..."
+                onkeypress="handleKeyPress(event)" autocomplete="off">
+            <button onclick="addPlayer()">AÑADIR</button>
+        </div>
+
+        <ul class="players-list" id="players-list">
+            <!-- Jugadores aparecerán aquí -->
+        </ul>
+
+        <button class="btn-generate" id="btn-generate" onclick="startTournament()">¡GENERAR FIXTURE!</button>
+    </div>
+
+    <!-- PANTALLA DEL FIXTURE -->
+    <div class="container fixture-container" id="fixture-view">
+        <div class="round-title" id="round-title">OCTAVOS DE FINAL</div>
+        <div class="instructions" id="round-instructions">HAZ CLIC EN EL LUCHADOR PARA ELEGIR AL GANADOR DEL COMBATE
+        </div>
+
+        <div id="matches-container">
+            <!-- Matches aparecerán aquí -->
+        </div>
+
+        <button class="btn-next-round" id="btn-next-round" onclick="nextRound()">¡SIGUIENTE RONDA!</button>
+
+        <button class="reset-btn" onclick="resetTournament()">CANCELAR E INICIAR NUEVO TORNEO</button>
+    </div>
+
+    <!-- PANTALLA CAMPEON -->
+    <div class="container champion-view" id="champion-view">
+        <div class="champion-title">¡CAMPEÓN!</div>
+        <div class="champion-name" id="champion-name">RYU</div>
+        <br>
+        <button class="btn-next-round" style="display:inline-block; margin-top: 3rem;"
+            onclick="resetTournament()">REINICIAR TORNEO</button>
+    </div>
+
+    <script>
+        let players = [];
+        let currentMatches = [];
+        let roundNumber = 1;
+
+        // MANEJO DE JUGADORES
+        function addPlayer() {
+            const input = document.getElementById('player-input');
+            const name = input.value.trim().toUpperCase();
+
+            if (name === '') return;
+            if (players.includes(name)) {
+                alert('¡Ese luchador ya está inscrito!');
+                return;
+            }
+
+            players.push(name);
+            input.value = '';
+            input.focus();
+            renderPlayers();
+        }
+
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') {
+                addPlayer();
+            }
+        }
+
+        function removePlayer(name) {
+            players = players.filter(p => p !== name);
+            renderPlayers();
+        }
+
+        function renderPlayers() {
+            const list = document.getElementById('players-list');
+            list.innerHTML = '';
+
+            players.forEach(player => {
+                const li = document.createElement('li');
+                li.className = 'player-card';
+                const escapedName = player.replace(/'/g, "\\'");
+                li.innerHTML = `
+                    <span>${player}</span>
+                    <button class="remove-btn" onclick="removePlayer('${escapedName}')" title="Eliminar Jugador">X</button>
+                `;
+                list.appendChild(li);
+            });
+
+            document.getElementById('player-count').innerText = `${players.length} LUCHADOR${players.length === 1 ? '' : 'ES'} INSCRITO${players.length === 1 ? '' : 'S'}`;
+
+            const btnGenerate = document.getElementById('btn-generate');
+            const errorMsg = document.getElementById('error-msg');
+
+            // VALIDACIÓN: Solo cantidad PAR de jugadores y al menos 2.
+            if (players.length >= 2 && players.length % 2 === 0) {
+                btnGenerate.style.display = 'block';
+                errorMsg.style.visibility = 'hidden';
+            } else {
+                btnGenerate.style.display = 'none';
+                if (players.length > 0 && players.length % 2 !== 0) {
+                    errorMsg.style.visibility = 'visible';
+                } else {
+                    errorMsg.style.visibility = 'hidden';
+                }
+            }
+        }
+
+        // LÓGICA DE TORNEO
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+
+        function startTournament() {
+            if (players.length < 2 || players.length % 2 !== 0) {
+                alert('¡Necesitas una cantidad PAR de luchadores!');
+                return;
+            }
+
+            document.getElementById('setup-view').style.display = 'none';
+            document.getElementById('fixture-view').style.display = 'block';
+
+            const shuffledPlayers = [...players];
+            shuffleArray(shuffledPlayers);
+
+            roundNumber = 1;
+            generateMatches(shuffledPlayers);
+        }
+
+        function generateMatches(fighterList) {
+            currentMatches = [];
+            for (let i = 0; i < fighterList.length; i += 2) {
+                if (fighterList[i + 1]) {
+                    currentMatches.push({
+                        p1: fighterList[i],
+                        p2: fighterList[i + 1],
+                        winner: null
+                    });
+                } else {
+                    // Si es impar el array de ganadores, avanza automáticamente (BYE)
+                    currentMatches.push({
+                        p1: fighterList[i],
+                        p2: null,
+                        winner: fighterList[i]
+                    });
+                }
+            }
+            renderRoundUI();
+            checkRoundComplete();
+        }
+
+        function getRoundName(matchCount) {
+            if (matchCount === 1) return "LA GRAN FINAL";
+            if (matchCount === 2) return "SEMIFINALES";
+            if (matchCount === 4) return "CUARTOS DE FINAL";
+            if (matchCount === 8) return "OCTAVOS DE FINAL";
+            return `RONDA ${roundNumber}`;
+        }
+
+        function renderRoundUI() {
+            const matchesContainer = document.getElementById('matches-container');
+            matchesContainer.innerHTML = '';
+
+            document.getElementById('round-title').innerText = getRoundName(currentMatches.length);
+            document.getElementById('btn-next-round').style.display = 'none';
+            document.getElementById('round-instructions').style.display = 'block';
+
+            currentMatches.forEach((match, index) => {
+                const matchDiv = document.createElement('div');
+                matchDiv.className = 'match';
+
+                // Si no hay oponente (BYE), mostrar que avanza automáticamente
+                if (match.p2 === null) {
+                    matchDiv.innerHTML = `
+                        <div class="fighter winner disabled">${match.p1}</div>
+                        <div class="vs" style="font-size: 1.2rem; color: var(--accent-yellow);">AVANZA LIBRE</div>
+                        <div class="fighter loser disabled" style="opacity: 0;">BYE</div>
+                    `;
+                    matchesContainer.appendChild(matchDiv);
+                    return;
+                }
+
+                // Evaluate states
+                const isDecided = match.winner !== null;
+                const p1Class = isDecided ? (match.winner === match.p1 ? 'fighter winner disabled' : 'fighter loser disabled') : 'fighter';
+                const p2Class = isDecided ? (match.winner === match.p2 ? 'fighter winner disabled' : 'fighter loser disabled') : 'fighter';
+
+                // Escaping names for onclick
+                const escP1 = match.p1.replace(/'/g, "\\'");
+                const escP2 = match.p2.replace(/'/g, "\\'");
+
+                matchDiv.innerHTML = `
+                    <div class="${p1Class}" onclick="selectWinner(${index}, '${escP1}')">${match.p1}</div>
+                    <div class="vs">VS</div>
+                    <div class="${p2Class}" onclick="selectWinner(${index}, '${escP2}')">${match.p2}</div>
+                `;
+
+                // Staggered animation
+                if (!isDecided) {
+                    matchDiv.style.animationDelay = `${index * 0.15}s`;
+                    matchDiv.style.animationFillMode = 'both';
+                    matchDiv.style.animationName = 'slideIn';
+                    matchDiv.style.animationDuration = '0.5s';
+                }
+
+                matchesContainer.appendChild(matchDiv);
+            });
+        }
+
+        function selectWinner(matchIndex, winnerName) {
+            const match = currentMatches[matchIndex];
+
+            // Si ya hay ganador para este match, no hacer nada
+            if (match.winner !== null) return;
+
+            match.winner = winnerName;
+            renderRoundUI(); // Re-render to show selected
+
+            checkRoundComplete();
+        }
+
+        function checkRoundComplete() {
+            const allDecided = currentMatches.every(m => m.winner !== null);
+
+            if (allDecided) {
+                document.getElementById('round-instructions').style.display = 'none';
+
+                if (currentMatches.length === 1) {
+                    // Es la final!
+                    setTimeout(() => {
+                        showChampion(currentMatches[0].winner);
+                    }, 800);
+                } else {
+                    // Mostrar botón para siguiente ronda
+                    document.getElementById('btn-next-round').style.display = 'block';
+                    // Scroll to button
+                    setTimeout(() => {
+                        document.getElementById('btn-next-round').scrollIntoView({ behavior: 'smooth' });
+                    }, 100);
+                }
+            }
+        }
+
+        function nextRound() {
+            roundNumber++;
+            const winners = currentMatches.map(m => m.winner);
+            generateMatches(winners);
+        }
+
+        function showChampion(name) {
+            document.getElementById('fixture-view').style.display = 'none';
+            document.getElementById('champion-view').style.display = 'block';
+            document.getElementById('champion-name').innerText = name;
+        }
+
+        function resetTournament() {
+            if (confirm('¿Seguro que deseas iniciar un torneo nuevo? Esto eliminará todos los jugadores.')) {
+                document.getElementById('fixture-view').style.display = 'none';
+                document.getElementById('champion-view').style.display = 'none';
+                document.getElementById('setup-view').style.display = 'block';
+                players = [];
+                renderPlayers();
+                document.getElementById('player-input').focus();
+            }
+        }
+
+        // Initial setup
+        document.getElementById('player-input').focus();
+        renderPlayers(); // Para ocultar el mensaje de error inicial
+    </script>
+</body>
+
+</html>
