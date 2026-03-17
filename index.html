@@ -470,7 +470,7 @@
     <!-- PANTALLA DE INGRESO -->
     <div class="container" id="setup-view">
         <div class="stats" id="player-count">0 LUCHADORES INSCRITOS</div>
-        <div class="error-msg" id="error-msg">INGRESA 2 O MÚLTIPLOS DE 4 (4, 8, 12...) PARA COMENZAR</div>
+        <div class="error-msg" id="error-msg">INGRESA AL MENOS 2 LUCHADORES PARA COMENZAR</div>
 
         <div class="input-group">
             <input type="text" id="player-input" placeholder="INGRESA EL NOMBRE DEL LUCHADOR..."
@@ -562,8 +562,8 @@
             const btnGenerate = document.getElementById('btn-generate');
             const errorMsg = document.getElementById('error-msg');
 
-            // VALIDACIÓN: 2 jugadores o múltiplos de 4 (4, 8, 12, 16...)
-            const isValidCount = players.length === 2 || (players.length >= 4 && players.length % 4 === 0);
+            // VALIDACIÓN: Al menos 2 jugadores
+            const isValidCount = players.length >= 2;
             if (isValidCount) {
                 btnGenerate.style.display = 'block';
                 errorMsg.style.visibility = 'hidden';
@@ -586,9 +586,9 @@
         }
 
         function startTournament() {
-            const isValidCount = players.length === 2 || (players.length >= 4 && players.length % 4 === 0);
+            const isValidCount = players.length >= 2;
             if (!isValidCount) {
-                alert('¡Necesitas 2 jugadores o una cantidad que sea múltiplo de 4!');
+                alert('¡Necesitas al menos 2 jugadores para comenzar!');
                 return;
             }
 
